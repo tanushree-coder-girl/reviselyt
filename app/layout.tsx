@@ -9,8 +9,35 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: {
+    default: "Reviselyt — AI Study & Interview Summarizer",
+    template: "%s | Reviselyt",
+  },
+  description:
+    "Upload study material or interview notes and get 5–10 AI-generated bullet points for fast, last-minute revision.",
+  keywords: [
+    "AI study summarizer",
+    "exam revision",
+    "interview preparation",
+    "PDF summarizer",
+    "AI notes",
+    "last minute revision",
+  ],
+  authors: [{ name: "Reviselyt" }],
+  openGraph: {
+    title: "Reviselyt — AI Study & Interview Summarizer",
+    description:
+      "Revise smarter for exams and interviews with AI-generated bullet summaries.",
+    url: defaultUrl,
+    siteName: "Reviselyt",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Reviselyt",
+    description:
+      "AI-powered last-minute exam & interview revision tool.",
+  },
 };
 
 const geistSans = Geist({
@@ -21,19 +48,31 @@ const geistSans = Geist({
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body
+        className={`${geistSans.className} antialiased bg-background text-foreground`}
+      >
+        {/* Accessibility: skip to content */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 bg-black text-white px-4 py-2 rounded"
+        >
+          Skip to content
+        </a>
+
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <main id="main" className="min-h-screen">
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>
