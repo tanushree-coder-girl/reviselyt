@@ -5,48 +5,36 @@ export default function Dashboard() {
     <div className="space-y-10">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">
-          Welcome back 👋
-        </h1>
+        <h1 className="text-3xl font-bold">Welcome back 👋</h1>
         <p className="text-muted-foreground">
-          Upload your study material and get last-minute
-          exam or interview summaries.
+          Turn long study material into quick, revision-friendly summaries.
         </p>
       </div>
 
       {/* Main Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <DashboardCard
-          title="Upload Material"
-          description="Upload PDF or paste text"
-          href="/dashboard/upload"
+          title="Generate Summary from PDF"
+          description="Upload a PDF and get key bullet points"
+          href="/dashboard/upload?mode=pdf"
           emoji="📄"
         />
 
         <DashboardCard
-          title="Generate Summary"
-          description="Exam or interview focused"
-          href="/dashboard/upload"
-          emoji="✨"
-        />
-
-        <DashboardCard
-          title="History"
-          description="View past summaries"
-          href="/dashboard/history"
-          emoji="🕘"
+          title="Paste Text & Get Summary"
+          description="Paste notes or content and summarize instantly"
+          href="/dashboard/upload?mode=text"
+          emoji="📝"
         />
       </div>
 
       {/* Tips */}
       <div className="rounded-lg border p-6 bg-muted/50">
-        <h2 className="font-semibold mb-2">
-          💡 Tips for best summaries
-        </h2>
+        <h2 className="font-semibold mb-2">💡 Tips</h2>
         <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
-          <li>Upload clean PDFs (not scanned images)</li>
-          <li>Use Exam mode for theory subjects</li>
-          <li>Use Interview mode for job prep</li>
+          <li>Use clean, text-based PDFs</li>
+          <li>Shorter content gives better summaries</li>
+          <li>Paste text if PDF extraction fails</li>
         </ul>
       </div>
     </div>
@@ -69,13 +57,9 @@ function DashboardCard({
       href={href}
       className="group rounded-xl border p-6 hover:bg-muted transition"
     >
-      <div className="text-3xl">{emoji}</div>
-      <h3 className="mt-4 font-semibold text-lg">
-        {title}
-      </h3>
-      <p className="text-sm text-muted-foreground">
-        {description}
-      </p>
+      <div className="text-4xl">{emoji}</div>
+      <h3 className="mt-4 font-semibold text-lg">{title}</h3>
+      <p className="text-sm text-muted-foreground">{description}</p>
     </Link>
   );
 }

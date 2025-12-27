@@ -48,7 +48,7 @@ export default function Home() {
       >
         <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-8">
           <FeatureCard
-            title="Upload Anything"
+            title="Upload PDFs or Text"
             description="Upload PDFs or paste text directly — works for notes, syllabi, or interview prep."
             emoji="📄"
           />

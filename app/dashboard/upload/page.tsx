@@ -1,108 +1,173 @@
-'use client';
+"use client";
+
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { handleUploadDocument, handleSummarize } from "./actions";
+import { extractTextFromPDF } from "@/lib/pdf";
 
 export default function UploadPage() {
+  const mode = useSearchParams().get("mode"); // pdf | text
+
+  const [title, setTitle] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [summary, setSummary] = useState("");
+
+  const handleSubmit = async () => {
+    if (!title.trim()) return alert("Please add a title ✏️");
+
+    if (mode === "pdf" && !file)
+      return alert("Please upload a PDF 📄");
+
+    if (mode === "text" && !text.trim())
+      return alert("Please paste some text ✍️");
+
+    setLoading(true);
+    try {
+      const doc = await handleUploadDocument({
+        title,
+        file: mode === "pdf" ? file : null,
+        text: mode === "text" ? text : "",
+      });
+
+      if (mode === 'text') {
+        const { summary } = await handleSummarize({
+          document_id: doc.id,
+          text:text
+        });
+        setSummary(summary.summary);
+      } else {
+        if (file && mode === "pdf") {
+          const extractedText = await extractTextFromPDF(file);
+          console.log("Extracted Text:", extractedText);
+
+          const { summary } = await handleSummarize({
+            document_id: doc.id,
+            text: extractedText,
+          });
+
+          setSummary(summary.summary);
+        }
+      }
+
+
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto space-y-10">
+    <div className="max-w-3xl mx-auto py-10 space-y-10">
       {/* Header */}
-      <div>
+      <div className="text-center space-y-2">
+        <span className="inline-block px-3 py-1 text-xs rounded-full bg-muted">
+          {mode === "pdf" ? "📄 PDF MODE" : "📝 TEXT MODE"}
+        </span>
         <h1 className="text-3xl font-bold">
-          Upload Study Material
+          {mode === "pdf"
+            ? "Summarize a PDF"
+            : "Summarize Your Text"}
         </h1>
-        <p className="text-muted-foreground">
-          Upload a PDF or paste text to get a quick
-          exam or interview summary.
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          Convert long content into short, clear bullet points —
+          perfect for exams & interviews.
         </p>
       </div>
 
-      {/* Upload Card */}
-      <div className="rounded-xl border p-6 space-y-6">
+      {/* Main Card */}
+      <div className="rounded-2xl border bg-background p-8 space-y-8 shadow-sm">
         {/* Title */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Document title
-          </label>
+        <div className="mb-8">
+          <label className="text-sm font-medium">Document Title</label>
           <input
-            type="text"
-            placeholder="e.g. Operating Systems Notes"
-            className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g. Operating Systems – Process Management"
+            className="mt-1 w-full rounded-lg border px-4 py-2 text-sm"
           />
         </div>
 
-        {/* File Upload */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Upload PDF (optional)
-          </label>
-          <input
-            type="file"
-            accept="application/pdf"
-            className="w-full rounded-md border px-3 py-2 text-sm"
-          />
-          <p className="text-xs text-muted-foreground">
-            Max size 5MB · Only PDF files
-          </p>
-        </div>
+        {/* PDF Upload */}
+        {mode === "pdf" && (
+          <label className="group cursor-pointer">
+            <input
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={(e) =>
+                setFile(e.target.files?.[0] || null)
+              }
+            />
 
-        {/* OR Divider */}
-        <div className="flex items-center gap-4">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground">
-            OR
-          </span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
+            <div className="flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-xl p-8 text-center transition group-hover:bg-muted">
+              <div className="text-4xl">📄</div>
+
+              {!file ? (
+                <>
+                  <p className="font-medium">
+                    Click to upload a PDF
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Text-based PDFs work best · Max 5MB
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-medium text-green-600">
+                    {file.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Ready to generate summary ✨
+                  </p>
+                </>
+              )}
+            </div>
+          </label>
+        )}
 
         {/* Text Input */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Paste your text
-          </label>
-          <textarea
-            rows={6}
-            placeholder="Paste your notes, syllabus, or interview material here..."
-            className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
-
-        {/* Mode Selector (UI only) */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Summary mode
-          </label>
-          <div className="flex gap-3">
-            <ModeBadge label="Exam" />
-            <ModeBadge label="Interview" />
-            <ModeBadge label="Quick" />
+        {mode === "text" && (
+          <div>
+            <label className="text-sm font-medium">
+              Paste Your Content
+            </label>
+            <textarea
+              rows={8}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Paste notes, syllabus, interview prep, or any topic here…"
+              className="mt-1 w-full rounded-xl border px-4 py-3 text-sm"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Tip: Clean text gives better summaries 💡
+            </p>
           </div>
-        </div>
+        )}
 
-        {/* Submit */}
+        {/* CTA */}
         <button
-          className="w-full bg-black text-white py-2.5 rounded-md font-medium hover:bg-black/90 transition"
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full rounded-xl bg-black text-white py-3 font-medium transition hover:opacity-90"
         >
-          Generate Summary ✨
+          {loading
+            ? "Generating summary…"
+            : "Generate Bullet Summary ✨"}
         </button>
       </div>
 
-      {/* Help Box */}
-      <div className="rounded-lg border bg-muted/50 p-4 text-sm">
-        <p className="font-medium mb-1">
-          💡 Best results tips
-        </p>
-        <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-          <li>Use clean PDFs (not scanned images)</li>
-          <li>Keep content focused (1 topic at a time)</li>
-          <li>Choose Interview mode for job prep</li>
-        </ul>
-      </div>
+      {/* Summary Output */}
+      {summary && (
+        <div className="rounded-xl border p-6 bg-muted/30">
+          <h2 className="font-semibold mb-3">📌 Summary</h2>
+          <pre className="whitespace-pre-wrap text-sm leading-relaxed">
+            {summary}
+          </pre>
+        </div>
+      )}
     </div>
-  );
-}
-
-function ModeBadge({ label }: { label: string }) {
-  return (
-    <span className="cursor-pointer rounded-full border px-4 py-1 text-sm hover:bg-muted transition">
-      {label}
-    </span>
   );
 }
