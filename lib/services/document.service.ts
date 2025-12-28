@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 
 export async function uploadDocumentService({
   title,
@@ -11,15 +11,15 @@ export async function uploadDocumentService({
 }) {
   const supabase = createClient();
 
-  const {
+   const {
     data: { user },
     error: userError,
-  } = await supabase.auth.getUser();
+  } = await (await supabase).auth.getUser();
 
   if (!user || userError) {
     throw new Error("User not authenticated");
   }
-
+  
   let file_url: string | null = null;
   let file_type: "pdf" | "text" = file ? "pdf" : "text";
 
@@ -27,7 +27,7 @@ export async function uploadDocumentService({
     const ext = file.name.split(".").pop();
     const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await (await supabase).storage
       .from("documents")
       .upload(filePath, file);
 
@@ -36,7 +36,7 @@ export async function uploadDocumentService({
     file_url = filePath;
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await (await supabase)
     .from("documents")
     .insert({
       user_id: user.id,

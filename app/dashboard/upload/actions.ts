@@ -1,3 +1,4 @@
+"use server";
 import { generateSummaryService, uploadDocumentService } from "@/lib/services";
 
 export async function handleUploadDocument({

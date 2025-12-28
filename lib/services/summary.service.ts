@@ -11,6 +11,7 @@ export async function generateSummaryService(documentId: string, text: string) {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser();
+    console.log(user)
 
     if (!user || userError) {
       throw new Error("User not authenticated");
