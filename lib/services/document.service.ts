@@ -11,7 +11,7 @@ export async function uploadDocumentService({
 }) {
   const supabase = createClient();
 
-   const {
+  const {
     data: { user },
     error: userError,
   } = await (await supabase).auth.getUser();
@@ -19,7 +19,7 @@ export async function uploadDocumentService({
   if (!user || userError) {
     throw new Error("User not authenticated");
   }
-  
+
   let file_url: string | null = null;
   let file_type: "pdf" | "text" = file ? "pdf" : "text";
 
@@ -36,19 +36,32 @@ export async function uploadDocumentService({
     file_url = filePath;
   }
 
-  const { data, error } = await (await supabase)
+  const { data: document, error } = await (await supabase)
     .from("documents")
     .insert({
       user_id: user.id,
       title,
-      content: file ? null : text,
+      content: text,
       file_url,
       file_type,
     })
     .select()
     .single();
 
-  if (error) throw error;
+  const { data: summary } = await (await supabase)
+    .from("summaries")
+    .insert({
+      document_id: document.id,
+      user_id: user.id,
+      mode: "bullet",
+      status: "pending",
+    })
+    .select("id")
+    .single();
 
-  return data;
+  if (error) throw error;
+  return {
+    ...document,
+    summary_id: summary?.id,
+  };
 }

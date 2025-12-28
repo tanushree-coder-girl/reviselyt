@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { handleUploadDocument, handleSummarize } from "./actions";
+import { handleUploadDocument } from "./actions";
 import { extractTextFromPDF } from "@/lib/pdf";
 import { useRouter } from "next/navigation";
 
@@ -24,29 +24,19 @@ export default function UploadPage() {
       return alert("Please paste some text ✍️");
 
     setLoading(true);
+
     try {
+      let extractedText = text;
+
+      if (mode === "pdf" && file) {
+        extractedText = await extractTextFromPDF(file);
+      }
+
       const doc = await handleUploadDocument({
         title,
         file: mode === "pdf" ? file : null,
-        text: mode === "text" ? text : "",
+        text: extractedText
       });
-
-      if (mode === 'text') {
-        await handleSummarize({
-          document_id: doc.id,
-          text: text
-        });
-      } else {
-        if (file && mode === "pdf") {
-          const extractedText = await extractTextFromPDF(file);
-          console.log("Extracted Text:", extractedText);
-
-          await handleSummarize({
-            document_id: doc.id,
-            text: extractedText,
-          });
-        }
-      }
       router.push(`/dashboard/summarize/${doc.id}`);
     } catch (e: any) {
       alert(e.message);

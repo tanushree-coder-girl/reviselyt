@@ -1,5 +1,5 @@
 "use server";
-import { generateSummaryService, uploadDocumentService } from "@/lib/services";
+import {  uploadDocumentService } from "@/lib/services";
 
 export async function handleUploadDocument({
   title,
@@ -23,14 +23,3 @@ export async function handleUploadDocument({
   }
 }
 
-export async function handleSummarize({
-  document_id,
-  text
-}: {
-  document_id:any
-  text:string
-}) {
-
-  const summary = await generateSummaryService(document_id, text);
-  return { summary };
-}

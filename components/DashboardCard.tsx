@@ -21,7 +21,7 @@ export default function DashboardCard({
     >
       <div className="text-4xl">{icon}</div>
 
-      <h3 className="mt-4 text-lg font-semibold group-hover:underline">
+      <h3 className="mt-4 text-lg font-semibold ">
         {title}
       </h3>
 

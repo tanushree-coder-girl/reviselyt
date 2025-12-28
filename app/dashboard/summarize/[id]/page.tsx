@@ -1,39 +1,38 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { SummaryPoller } from "@/components/SummaryPoller";
+import { SummaryTrigger } from "@/components/SummaryTrigger";
 
 export default async function SummaryPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
   const supabase = await createClient();
+  const { id } = await params;
 
-  // 1️⃣ Auth check
+  // 🔐 Auth
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser();
 
-  if (!user || authError) {
+  if (!user) {
     return (
-      <div className="max-w-xl mx-auto py-16 text-center">
-        <p className="text-sm text-gray-600">
-          Please login to view this summary.
-        </p>
-        <Link href="/auth/login" className="text-purple-600 hover:underline">
-          Go to login →
+      <div className="text-center py-20">
+        <p>Please login</p>
+        <Link href="/auth/login" className="text-purple-600 underline">
+          Go to login
         </Link>
       </div>
     );
   }
 
-  // 2️⃣ Fetch latest summary
-  const { data, error } = await supabase
+  // 📦 Summary + document
+  const { data } = await supabase
     .from("summaries")
-    .select(
-      `
+    .select(`
       summary,
+      status,
       created_at,
       documents (
         title,
@@ -41,116 +40,116 @@ export default async function SummaryPage({
         content,
         file_url
       )
-    `
-    )
+    `)
     .eq("document_id", id)
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1);
+    .limit(1)
+    .single();
 
-  const summary = data?.[0];
-
-  let pdfUrl: string | null = null;
-
-  if (summary.documents.file_type === "pdf" && summary.documents.file_url) {
-    const { data } = await supabase.storage
-      .from("documents")
-      .createSignedUrl(summary.documents.file_url, 60 * 60); // 1 hour
-
-    pdfUrl = data?.signedUrl || null;
-  }
-
-  if (error || !summary) {
+  if (!data) {
     return (
-      <div className="max-w-xl mx-auto py-16 text-center">
-        <p className="text-sm text-gray-600">
-          Summary not found.
-        </p>
-        <Link href="/dashboard" className="text-purple-600 hover:underline">
-          ← Back to dashboard
-        </Link>
+      <div className="text-center py-20">
+        <p>Summary not found</p>
       </div>
     );
   }
 
-  // 3️⃣ UI
+  const summary = data;
+
+  // 🔗 PDF URL
+  let pdfUrl: string | null = null;
+  if (
+    summary.documents.file_type === "pdf" &&
+    summary.documents.file_url
+  ) {
+    const { data } = await supabase.storage
+      .from("documents")
+      .createSignedUrl(summary.documents.file_url, 3600);
+
+    pdfUrl = data?.signedUrl || null;
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">
-          Summary
-        </h1>
 
-        <Link
-          href="/dashboard"
-          className="text-sm text-purple-600 hover:underline"
-        >
-          ← Back to dashboard
+      {/* 🔥 background trigger */}
+      <SummaryTrigger
+        status={summary.status}
+        documentId={id}
+        mode={summary.documents.file_type}
+        text={summary.documents.content}
+      />
+
+      {/* 🔄 polling */}
+      <SummaryPoller status={summary.status} />
+
+      {/* header */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Summary</h1>
+        <Link href="/dashboard" className="text-purple-600 underline">
+          ← Back
         </Link>
       </div>
 
-      {/* Split layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left — Original document */}
-        <div className="rounded-xl border bg-white p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Original Document
+      <div className="grid md:grid-cols-2 gap-6">
+
+        {/* LEFT — Original Document */}
+        <div className="border rounded-xl p-6 bg-white">
+          <h2 className="font-semibold mb-2">
+            {summary.documents.title}
           </h2>
 
-          <div className="space-y-1">
-            <p className="font-medium text-gray-900">
-              {summary.documents.title}
-            </p>
-          </div>
-
           {summary.documents.file_type === "pdf" ? (
-            <div className="mt-4 h-[500px] rounded-lg overflow-hidden border">
-              {pdfUrl ? (
-                <>
-                 <a
-                    href={pdfUrl}
-                    target="_blank"
-                    className="text-sm text-purple-600 hover:underline"
-                  >
-                    Open PDF in new tab →
-                  </a>
-                  <iframe
-                    src={pdfUrl}
-                    className="w-full h-full"
-                  />
-                 
-                </>
-              ) : (
-                <p className="text-sm text-gray-500">
-                  Unable to load PDF
-                </p>
-              )}
-            </div>
+            pdfUrl ? (
+              <>
+                <a
+                  href={pdfUrl}
+                  target="_blank"
+                  className="text-sm text-purple-600 underline"
+                >
+                  Open PDF →
+                </a>
+                <iframe
+                  src={pdfUrl}
+                  className="w-full h-[450px] mt-2 border rounded"
+                />
+              </>
+            ) : (
+              <p>PDF load failed</p>
+            )
           ) : (
-            <div className="mt-4 text-sm text-gray-600 leading-relaxed whitespace-pre-wrap max-h-[500px] overflow-auto">
+            <div className="text-sm whitespace-pre-wrap max-h-[450px] overflow-auto">
               {summary.documents.content}
             </div>
           )}
-
-
-
         </div>
 
-        {/* Right — Summary */}
-        <div className="rounded-xl border bg-gradient-to-b from-purple-50 via-white to-blue-50 p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Generated Summary
-            </h2>
-            <p className="text-xs text-gray-500">
-              {new Date(summary.created_at).toLocaleString()}
-            </p>
-          </div>
+        {/* RIGHT — Summary */}
+        <div className="border rounded-xl p-6 bg-gradient-to-b from-purple-50 to-white">
+          <h2 className="font-semibold mb-4">
+            Generated Summary
+          </h2>
 
-          <div className="text-sm md:text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
-            {summary.summary}
-          </div>
+          {/* ⏳ pending */}
+          {summary.status === "pending" && (
+            <p className="text-gray-500 text-center py-20">
+              Generating summary… ⏳
+            </p>
+          )}
+
+          {/* ❌ failed */}
+          {summary.status === "failed" && (
+            <p className="text-red-500 text-center py-20">
+              Failed to generate summary
+            </p>
+          )}
+
+          {/* ✅ completed */}
+          {summary.status === "completed" && (
+            <pre className="whitespace-pre-wrap text-sm leading-relaxed">
+              {summary.summary}
+            </pre>
+          )}
         </div>
       </div>
     </div>

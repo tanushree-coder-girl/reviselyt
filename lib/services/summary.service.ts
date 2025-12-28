@@ -3,43 +3,29 @@
 import { createClient } from "@/lib/supabase/server";
 import { summarizeText } from "@/lib/summarize";
 
-export async function generateSummaryService(documentId: string, text: string) {
+export async function generateSummaryService(
+  summaryId: string,
+  text: string
+) {
+  const supabase = await createClient();
+
   try {
-    const supabase = await createClient();
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-    console.log(user)
-
-    if (!user || userError) {
-      throw new Error("User not authenticated");
-    }
     const bullets = await summarizeText(text);
-    console.log(bullets)
 
-    const { data: summary, error: insertError } = await supabase
+    await supabase
       .from("summaries")
-      .insert({
-        document_id: documentId,
-        user_id: user.id,
-        mode: "bullet",
+      .update({
         summary: bullets.join("\n"),
+        status: "completed",
       })
-      .select()
-      .single();
+      .eq("id", summaryId);
 
-    console.log(summary)
-
-    if (insertError) {
-      console.error("Supabase insert summary error:", insertError);
-      throw new Error("Failed to insert summary");
-    }
-
-    return summary;
   } catch (err) {
-    console.error("generateSummaryService error:", err);
-    throw err; // rethrow for Next.js to catch
+    console.error("Summary failed:", err);
+
+    await supabase
+      .from("summaries")
+      .update({ status: "failed" })
+      .eq("id", summaryId);
   }
 }
