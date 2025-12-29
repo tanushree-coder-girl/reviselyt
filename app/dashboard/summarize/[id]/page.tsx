@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { SummaryPoller } from "@/components/SummaryPoller";
-import { SummaryTrigger } from "@/components/SummaryTrigger";
+import { SummaryPoller } from "./components/SummaryPoller";
+import { SummaryTrigger } from "./components/SummaryTrigger";
 import { getSummaryByIDAction, getPDFSignedUrlAction } from "./action";
+import { SummaryGenerating } from "./components/SummaryLoading";
+import { fetchImageForSummary } from "@/lib/utils";
 
 export default async function SummaryPage({
   params,
@@ -12,7 +14,6 @@ export default async function SummaryPage({
   const supabase = await createClient();
   const { id } = await params;
 
-  // 🔐 Auth
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -36,12 +37,17 @@ export default async function SummaryPage({
     );
   }
 
-  const summary = data;
+  const summary: any = data;
+
+  let summaryImage: string | null = null;
+  if (summary.status === "completed") {
+    summaryImage = await fetchImageForSummary(summary.summary);
+  }
 
   let pdfUrl: string | null = null;
   if (
-    summary.documents.file_type === "pdf" &&
-    summary.documents.file_url
+    summary?.documents?.file_type === "pdf" &&
+    summary.documents?.file_url
   ) {
     const { data } = await getPDFSignedUrlAction(summary.documents.file_url);
     pdfUrl = data?.signedUrl || null;
@@ -52,8 +58,8 @@ export default async function SummaryPage({
       <SummaryTrigger
         status={summary.status}
         documentId={id}
-        mode={summary.documents.file_type}
-        text={summary.documents.content}
+        mode={summary?.documents?.file_type}
+        text={summary?.documents?.content}
       />
       <SummaryPoller status={summary.status} />
 
@@ -66,13 +72,12 @@ export default async function SummaryPage({
 
       <div className="grid md:grid-cols-2 gap-6">
 
-        {/* LEFT — Original Document */}
         <div className="border rounded-xl p-6 bg-white">
           <h2 className="font-semibold mb-2">
-            {summary.documents.title}
+            {summary?.documents?.title}
           </h2>
 
-          {summary.documents.file_type === "pdf" ? (
+          {summary?.documents?.file_type === "pdf" ? (
             pdfUrl ? (
               <>
                 <a
@@ -92,36 +97,41 @@ export default async function SummaryPage({
             )
           ) : (
             <div className="text-sm whitespace-pre-wrap max-h-[450px] overflow-auto">
-              {summary.documents.content}
+              {summary?.documents?.content}
             </div>
           )}
         </div>
 
-        {/* RIGHT — Summary */}
         <div className="border rounded-xl p-6 bg-gradient-to-b from-purple-50 to-white">
           <h2 className="font-semibold mb-4">
             Generated Summary
           </h2>
 
-          {/* ⏳ pending */}
           {summary.status === "pending" && (
-            <p className="text-gray-500 text-center py-20">
-              Generating summary… ⏳
-            </p>
+            <SummaryGenerating />
           )}
 
-          {/* ❌ failed */}
           {summary.status === "failed" && (
             <p className="text-red-500 text-center py-20">
               Failed to generate summary
             </p>
           )}
 
-          {/* ✅ completed */}
           {summary.status === "completed" && (
-            <pre className="whitespace-pre-wrap text-sm leading-relaxed">
-              {summary.summary}
-            </pre>
+            <>
+              {summaryImage && (
+                <div className="my-4">
+                  <img
+                    src={summaryImage}
+                    alt="Related to summary"
+                    className="w-full h-64 object-cover rounded-xl"
+                  />
+                </div>
+              )}
+              <pre className="whitespace-pre-wrap text-sm leading-relaxed">
+                {summary.summary}
+              </pre>
+            </>
           )}
         </div>
       </div>
