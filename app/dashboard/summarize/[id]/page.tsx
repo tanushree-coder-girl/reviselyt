@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { SummaryPoller } from "@/components/SummaryPoller";
 import { SummaryTrigger } from "@/components/SummaryTrigger";
+import { getSummaryByIDAction, getPDFSignedUrlAction } from "./action";
 
 export default async function SummaryPage({
   params,
@@ -26,26 +27,7 @@ export default async function SummaryPage({
       </div>
     );
   }
-
-  // 📦 Summary + document
-  const { data } = await supabase
-    .from("summaries")
-    .select(`
-      summary,
-      status,
-      created_at,
-      documents (
-        title,
-        file_type,
-        content,
-        file_url
-      )
-    `)
-    .eq("document_id", id)
-    .eq("user_id", user.id)
-    .limit(1)
-    .single();
-
+  const { data } = await getSummaryByIDAction(id);
   if (!data) {
     return (
       <div className="text-center py-20">
@@ -56,34 +38,25 @@ export default async function SummaryPage({
 
   const summary = data;
 
-  // 🔗 PDF URL
   let pdfUrl: string | null = null;
   if (
     summary.documents.file_type === "pdf" &&
     summary.documents.file_url
   ) {
-    const { data } = await supabase.storage
-      .from("documents")
-      .createSignedUrl(summary.documents.file_url, 3600);
-
+    const { data } = await getPDFSignedUrlAction(summary.documents.file_url);
     pdfUrl = data?.signedUrl || null;
   }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
-
-      {/* 🔥 background trigger */}
       <SummaryTrigger
         status={summary.status}
         documentId={id}
         mode={summary.documents.file_type}
         text={summary.documents.content}
       />
-
-      {/* 🔄 polling */}
       <SummaryPoller status={summary.status} />
 
-      {/* header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Summary</h1>
         <Link href="/dashboard" className="text-purple-600 underline">

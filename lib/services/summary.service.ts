@@ -1,31 +1,48 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { summarizeText } from "@/lib/summarize";
 
-export async function generateSummaryService(
-  summaryId: string,
-  text: string
-) {
-  const supabase = await createClient();
+export async function getSummaryByID(doc_id: string | number) {
+  const supabase = createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await (await supabase).auth.getUser();
 
-  try {
-    const bullets = await summarizeText(text);
-
-    await supabase
-      .from("summaries")
-      .update({
-        summary: bullets.join("\n"),
-        status: "completed",
-      })
-      .eq("id", summaryId);
-
-  } catch (err) {
-    console.error("Summary failed:", err);
-
-    await supabase
-      .from("summaries")
-      .update({ status: "failed" })
-      .eq("id", summaryId);
+  if (!user || userError) {
+    throw new Error("User not authenticated");
   }
+
+  const { data, error } = await (await supabase)
+    .from("summaries")
+    .select(`
+      summary,
+      status,
+      created_at,
+      documents (
+        title,
+        file_type,
+        content,
+        file_url
+      )
+    `)
+    .eq("document_id", doc_id)
+    .eq("user_id", user.id)
+    .limit(1)
+    .single();
+
+  if (error) {
+    console.error("getUserDocumentsService error:", error);
+    throw new Error("Failed to fetch documents");
+  }
+
+  return data;
+}
+
+export async function getPDFSignedUrl(file_url: any) {
+  const supabase = createClient();
+  const { data } = await (await supabase).storage
+    .from("documents")
+    .createSignedUrl(file_url, 3600);
+  return data;
 }
