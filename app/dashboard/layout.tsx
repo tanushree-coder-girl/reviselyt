@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import Footer from "@/components/Footer";
+import CurrentYear from "@/components/common/CurrentYear";
+import Header from "@/components/common/Header";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<{ email: string } | null>(null);
@@ -37,59 +35,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <main className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b bg-white shadow-sm">
-        <div className="mx-auto max-w-6xl flex justify-between items-center px-6 py-4">
-          {/* Left: Logo */}
-          <Link href="/dashboard">
-            <div className="flex items-center gap-2">
-              <Image
-                src="/logo.png"
-                alt="Reviselyt Logo"
-                width={80}
-                height={50}
-                priority
-              />
-            </div>
-          </Link>
-
-
-
-          {/* Right: User Info + Theme Switcher */}
-          <div className="flex items-center gap-4">
-            {/* <ThemeSwitcher /> */}
-
-            {user ? (
-              <div className="flex items-center gap-4">
-                <span className="text-gray-700 font-medium">{user.email}</span>
-
-                <button
-                  onClick={handleLogout}
-                  className="bg-gradient-to-r from-purple-600 to-blue-500
-             text-white px-4 py-2 rounded-lg
-             font-medium hover:opacity-90 transition
-             shadow-lg"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/auth/login"
-                className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition"
-              >
-                Get Started
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
-
+      <Header variant="dashboard" user={user} onLogout={handleLogout} />
       {/* Main content */}
       <section className="flex-1 mx-auto w-full max-w-6xl p-6 min-h-screen">{children}</section>
 
       {/* Footer */}
       <footer className="border-t py-4 text-xs text-center text-gray-500">
-        © {new Date().getFullYear()} Reviselyt · Open Source
+        © <CurrentYear /> Reviselyt · Open Source
       </footer>
     </main>
   );

@@ -1,0 +1,7 @@
+export { default as FeatureCard } from "./FeatureCard";
+export { default as CTA } from "./CTA";
+export { default as Features } from "./Features";
+export { default as Hero } from "./Hero";
+export { default as Purpose } from "./Purpose";
+export { default as WhyOpenSource } from "./WhyOpenSource";
+export { default as Footer } from "./Footer";

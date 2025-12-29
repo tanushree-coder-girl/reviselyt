@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getDashboardDocuments } from "./actions";
-import DashboardCard from "@/components/DashboardCard";
-import DocumentsTable from "@/components/DocumentsTable";
+import ActionCard from "./components/ActionCard";
+import DocumentsTable from "./components/DocumentsTable";
 
 export default async function Dashboard() {
   const { documents } = await getDashboardDocuments();
@@ -25,7 +25,7 @@ export default async function Dashboard() {
 
       {/* Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <DashboardCard
+        <ActionCard
           title="Generate Summary from PDF"
           description="Upload a PDF and get key bullet points"
           href="/dashboard/upload?mode=pdf"
@@ -47,7 +47,7 @@ export default async function Dashboard() {
           }
         />
 
-        <DashboardCard
+        <ActionCard
           title="Paste Text & Get Summary"
           description="Paste notes or content and summarize instantly"
           href="/dashboard/upload?mode=text"

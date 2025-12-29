@@ -3,18 +3,17 @@
 import { createClient } from "@/lib/supabase/server";
 
 export async function getUserDocumentsService() {
-  const supabase = await createClient();
-
+  const supabase = createClient();
   const {
     data: { user },
     error: userError,
-  } = await supabase.auth.getUser();
+  } = await (await supabase).auth.getUser();
 
   if (!user || userError) {
     throw new Error("User not authenticated");
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await (await supabase)
     .from("documents")
     .select(`
       id,

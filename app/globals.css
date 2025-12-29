@@ -66,3 +66,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+*::selection {
+  background: #a182e9;
+  color: #ffffff;
+}
+*::-moz-selection {
+  background: #a182e9;
+  color: #ffffff;
+}
+*::-webkit-selection {
+  background: #a182e9;
+  color: #ffffff;
+}

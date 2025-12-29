@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createHash } from "crypto";
 
 export async function uploadDocumentService({
   title,
@@ -19,6 +20,8 @@ export async function uploadDocumentService({
   if (!user || userError) {
     throw new Error("User not authenticated");
   }
+
+  const hash = createHash("sha256").update(text).digest("hex");
 
   let file_url: string | null = null;
   let file_type: "pdf" | "text" = file ? "pdf" : "text";
@@ -44,22 +47,45 @@ export async function uploadDocumentService({
       content: text,
       file_url,
       file_type,
+      document_hash: hash,
     })
     .select()
     .single();
 
-  const { data: summary } = await (await supabase)
-    .from("summaries")
-    .insert({
-      document_id: document.id,
-      user_id: user.id,
-      mode: "bullet",
-      status: "pending",
-    })
-    .select("id")
+  if (error) throw error;
+
+  const { data: cached } = await (await supabase)
+    .from("summary_cache")
+    .select("summary")
+    .eq("document_hash", hash)
     .single();
 
-  if (error) throw error;
+  let summary;
+  if (cached) {
+    summary = await (await supabase)
+      .from("summaries")
+      .insert({
+        document_id: document.id,
+        user_id: user.id,
+        mode: "bullet",
+        summary: cached.summary,
+        status: "completed",
+      })
+      .select("id")
+      .single();
+  } else {
+    summary = await (await supabase)
+      .from("summaries")
+      .insert({
+        document_id: document.id,
+        user_id: user.id,
+        mode: "bullet",
+        status: "pending",
+      })
+      .select("id")
+      .single();
+  }
+
   return {
     ...document,
     summary_id: summary?.id,
