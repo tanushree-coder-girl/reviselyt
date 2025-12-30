@@ -14,7 +14,7 @@ export default function Header({
 }: HeaderProps) {
   return (
     <header className="border-b bg-white shadow-sm">
-      <div className="mx-auto max-w-6xl flex justify-between items-center px-6 py-4">
+      <div className="mx-auto max-w-7xl flex justify-between items-center px-6 py-4">
         
         <Link href={variant === "dashboard" ? "/dashboard" : "/"}>
           <div className="flex items-center gap-2">

@@ -19,15 +19,24 @@ export function SummaryTrigger({
     if (status === "pending" && !fired.current) {
       fired.current = true;
 
-      fetch("/api/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          documentId,
-          mode,
-          text,
-        }),
-      });
+      (async () => {
+        try {
+          const res = await fetch("/api/summarize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ documentId, mode, text }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            alert(data.error || "Failed to start summary");
+          }
+        } catch (err: any) {
+          console.error("Summary API call failed:", err);
+          alert("Failed to start summary. Please try again.");
+        }
+      })();
     }
   }, [status, documentId, mode, text]);
 

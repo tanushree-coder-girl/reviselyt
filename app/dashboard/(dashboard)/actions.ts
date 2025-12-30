@@ -1,13 +1,14 @@
+// dashboard.action.ts
 "use server";
 
-import { getUserDocumentsService } from "@/lib/services/dashboard.service";
+import { getDashboardDataService } from "@/lib/services/dashboard.service";
 
-export async function getDashboardDocuments() {
+export async function getDashboardData() {
   try {
-    const documents = await getUserDocumentsService();
-    return { documents };
+    const data = await getDashboardDataService();
+    return data;
   } catch (error: any) {
-    console.error("getDashboardDocuments action error:", error);
-    throw new Error(error.message || "Failed to load dashboard");
+    console.error("getDashboardData action error:", error);
+    throw new Error(error.message || "Failed to load dashboard data");
   }
 }

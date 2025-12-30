@@ -1,18 +1,35 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { handleUploadDocument } from "./actions";
+import { useEffect, useState } from "react";
+import { getUsageAction, handleUploadDocument } from "./actions";
 import { extractTextFromPDF } from "@/lib/pdf";
 import { useRouter } from "next/navigation";
 
 export default function UploadPage() {
-  const mode = useSearchParams().get("mode"); // pdf | text
+  const mode = useSearchParams().get("mode"); 
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [usage, setUsage] = useState<any>(null);
+
+  useEffect(() => {
+    getUsageAction().then(setUsage);
+  }, [])
+
+  useEffect(() => {
+    if (!mode) {
+      router.replace("/dashboard/upload?mode=text");
+      return;
+    }
+
+    if (mode !== "text" && mode !== "pdf") {
+      router.replace("/dashboard");
+    }
+  }, [mode, router]);
+
 
   const handleSubmit = async () => {
     if (!title.trim()) return alert("Please add a title ✏️");
@@ -42,14 +59,22 @@ export default function UploadPage() {
       alert(e.message);
     } finally {
       setLoading(false);
+      setText("");
+      setFile(null);
+      setTitle("");
     }
   };
+
+  const pdfRemaining = usage ? Math.max(1 - (usage.pdf_summaries_today || 0), 0) : 0;
+  const textRemaining = usage ? Math.max(2 - (usage.text_summaries_today || 0), 0) : 0;
+
+  const limitReached =
+    (mode === "pdf" && pdfRemaining === 0) ||
+    (mode === "text" && textRemaining === 0);
 
   return (
     <div className="">
       <div className="max-w-4xl mx-auto px-6 py-20 space-y-16">
-
-        {/* Header / Hero */}
         <div className="text-center space-y-5">
           <span className="inline-flex items-center px-4 py-1.5 text-xs rounded-full border border-purple-300 text-purple-700 font-medium">
             {mode === "pdf" ? "PDF SUMMARIZATION" : "TEXT SUMMARIZATION"}
@@ -65,10 +90,8 @@ export default function UploadPage() {
           </p>
         </div>
 
-        {/* Upload Card */}
         <div className="bg-white rounded-3xl shadow-xl border p-8 md:p-12 space-y-10">
 
-          {/* Title */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-900">
               Document title
@@ -81,7 +104,6 @@ export default function UploadPage() {
             />
           </div>
 
-          {/* PDF Upload */}
           {mode === "pdf" && (
             <label className="block cursor-pointer">
               <input
@@ -115,7 +137,6 @@ export default function UploadPage() {
             </label>
           )}
 
-          {/* Text Input */}
           {mode === "text" && (
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-900">
@@ -134,13 +155,16 @@ export default function UploadPage() {
             </div>
           )}
 
-          {/* CTA */}
           <button
             onClick={handleSubmit}
-            disabled={loading}
-            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 text-white py-4 text-base font-semibold hover:opacity-90 transition disabled:opacity-60 shadow-lg"
+            disabled={loading || limitReached}
+            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 text-white py-4 text-base font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
-            {loading ? "Generating summary…" : "Generate summary"}
+            {limitReached
+              ? "Daily limit reached"
+              : loading
+                ? "Generating summary…"
+                : "Generate summary"}
           </button>
         </div>
       </div>

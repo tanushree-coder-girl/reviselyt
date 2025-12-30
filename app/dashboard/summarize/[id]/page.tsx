@@ -54,7 +54,7 @@ export default async function SummaryPage({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">
       <SummaryTrigger
         status={summary.status}
         documentId={id}
@@ -89,14 +89,14 @@ export default async function SummaryPage({
                 </a>
                 <iframe
                   src={pdfUrl}
-                  className="w-full h-[450px] mt-2 border rounded"
+                  className="w-full h-[600px] mt-2 border rounded"
                 />
               </>
             ) : (
               <p>PDF load failed</p>
             )
           ) : (
-            <div className="text-sm whitespace-pre-wrap max-h-[450px] overflow-auto">
+            <div className="text-sm whitespace-pre-wrap max-h-[600px] overflow-auto">
               {summary?.documents?.content}
             </div>
           )}
@@ -118,7 +118,7 @@ export default async function SummaryPage({
           )}
 
           {summary.status === "completed" && (
-            <>
+            <div className="w-full h-[600px] overflow-auto">
               {summaryImage && (
                 <div className="my-4">
                   <img
@@ -131,7 +131,7 @@ export default async function SummaryPage({
               <pre className="whitespace-pre-wrap text-sm leading-relaxed">
                 {summary.summary}
               </pre>
-            </>
+            </div>
           )}
         </div>
       </div>

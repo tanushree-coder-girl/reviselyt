@@ -88,6 +88,19 @@ export async function uploadDocumentService({
 
   return {
     ...document,
-    summary_id: summary?.id,
   };
+}
+
+export async function getUsage() {
+  const supabase = createClient();
+  const { data: { user } } = await (await supabase).auth.getUser();
+  if (!user) return null;
+
+  const { data } = await (await supabase)
+    .from("usage_limits")
+    .select("pdf_summaries_today, text_summaries_today, last_reset")
+    .eq("user_id", user.id)
+    .single();
+
+  return data;
 }

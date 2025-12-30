@@ -4,7 +4,7 @@ import React from 'react'
 const WhyOpenSource = () => {
     return (
         <section className="px-6 py-28 bg-gradient-to-b from-white via-purple-50 to-blue-50">
-            <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-start">
+            <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-start">
 
                 <div className="space-y-10">
                     <p className="text-xl md:text-2xl text-gray-900 leading-relaxed">

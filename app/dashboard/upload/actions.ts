@@ -1,5 +1,5 @@
 "use server";
-import {  uploadDocumentService } from "@/lib/services";
+import {  getUsage, uploadDocumentService } from "@/lib/services";
 
 export async function handleUploadDocument({
   title,
@@ -21,5 +21,10 @@ export async function handleUploadDocument({
     console.error("Upload failed:", error);
     throw new Error(error.message || "Failed to upload document");
   }
+}
+
+export async function getUsageAction() {
+  const data = await getUsage();
+  return data;
 }
 

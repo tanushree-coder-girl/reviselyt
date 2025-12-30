@@ -3,7 +3,7 @@ import React from 'react'
 const Purpose = () => {
     return (
         <section className="px-6 py-20 bg-gradient-to-b from-blue-50 via-white to-purple-50">
-            <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+            <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
                 <div className="md:sticky md:top-32 self-start">
                     <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
                         The Idea Behind It
