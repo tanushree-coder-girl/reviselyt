@@ -5,6 +5,8 @@ import DocumentsTable from "./components/DocumentsTable";
 import { getDashboardData } from "./actions";
 import DashboardActions from "./components/DashboardActions";
 
+export const dynamic = "force-dynamic";
+
 export default async function Dashboard() {
   const { documents, usage } = await getDashboardData();
 

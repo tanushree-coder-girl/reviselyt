@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
+  // cacheComponents: true,
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb', // Set your desired limit here

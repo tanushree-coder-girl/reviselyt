@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import {Toaster} from "sonner";
+import { Toaster } from "sonner";
 import "./globals.css";
+import { Suspense } from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -72,9 +73,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Toaster richColors position="top-right" />
-          <main id="main" className="min-h-screen">
-            {children}
-          </main>
+
+          <Suspense fallback="<div>loading...</div>">
+            <main id="main" className="min-h-screen">
+              {children}
+            </main>
+          </Suspense>
         </ThemeProvider>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
