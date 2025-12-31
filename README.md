@@ -4,6 +4,15 @@ Reviselyt is an open-source learning tool built with Next.js, Supabase, and AI A
 Built for students, exam preparation, and interview revision.
 
 ---
+If you find this project useful, please consider starring the repository.
+
+<p align="center">
+    <img src="public/Reviselyt-dashboard.png" alt="Reviselty dashboard showing previous generated summaries"/>
+</p>
+
+<p align="center">
+    <img src="public/summary.png" alt="Reviselty summary page showing summary generate from text"/>
+</p>
 
 ## Features
 
@@ -98,8 +107,6 @@ http://localhost:3000
 
 Reviselyt is built in public and open source.
 Issues, feature requests, and pull requests are welcome.
-
-If you find this project useful, please consider starring the repository.
 
 ### License
 
