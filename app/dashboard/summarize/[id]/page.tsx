@@ -41,7 +41,7 @@ export default async function SummaryPage({
 
   let summaryImage: string | null = null;
   if (summary.status === "completed") {
-    summaryImage = await fetchImageForSummary(summary.summary);
+    summaryImage = await fetchImageForSummary(summary.documents.title);
   }
 
   let pdfUrl: string | null = null;
@@ -77,7 +77,7 @@ export default async function SummaryPage({
             {summary?.documents?.title}
           </h2>
 
-          {summary?.documents?.file_type === "pdf" ? (
+          {summary.status === "completed" && summary?.documents?.file_type === "pdf" ? (
             pdfUrl ? (
               <>
                 <a
@@ -97,7 +97,7 @@ export default async function SummaryPage({
             )
           ) : (
             <div className="text-sm whitespace-pre-wrap max-h-[600px] overflow-auto">
-              {summary?.documents?.content}
+              {summary?.documents?.file_type === "text" ? summary?.documents?.content : ""}
             </div>
           )}
         </div>

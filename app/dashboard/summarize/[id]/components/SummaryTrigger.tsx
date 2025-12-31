@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 export function SummaryTrigger({
   status,
@@ -30,11 +31,10 @@ export function SummaryTrigger({
           const data = await res.json();
 
           if (!res.ok) {
-            alert(data.error || "Failed to start summary");
+            toast.error(data.error || "Failed to start summary");
           }
         } catch (err: any) {
-          console.error("Summary API call failed:", err);
-          alert("Failed to start summary. Please try again.");
+          toast.error("Failed to start summary. Please try again.");
         }
       })();
     }

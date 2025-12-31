@@ -7,69 +7,110 @@ export async function POST(req: Request) {
   const supabase = await createClient();
 
   try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (!user || userError) throw new Error("User not authenticated");
+    if (!user || userError) {
+      return NextResponse.json(
+        { error: "User not authenticated" },
+        { status: 401 }
+      );
+    }
 
     const { data: doc } = await supabase
       .from("documents")
       .select("*")
       .eq("id", documentId)
+      .eq("user_id", user.id)
       .single();
 
-    if (!doc) throw new Error("Document not found");
+    if (!doc) {
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 }
+      );
+    }
 
     const now = new Date();
-    let { data: usageData } = await supabase
+
+    let { data: usage } = await supabase
       .from("usage_limits")
       .select("*")
       .eq("user_id", user.id)
       .single();
 
-    let pdfUsed = 0;
-    let textUsed = 0;
-
-    if (!usageData) {
-      await supabase.from("usage_limits").insert({
-        user_id: user.id,
-        pdf_summaries_today: 0,
-        text_summaries_today: 0,
-        last_reset: now,
-      });
-      usageData = { pdf_summaries_today: 0, text_summaries_today: 0, last_reset: now };
-    } else {
-      const lastReset = new Date(usageData.last_reset);
-      if (now.getTime() - lastReset.getTime() > 24 * 60 * 60 * 1000) {
-        pdfUsed = 0;
-        textUsed = 0;
-        await supabase.from("usage_limits").update({
+    if (!usage) {
+      const { data: created } = await supabase
+        .from("usage_limits")
+        .insert({
+          user_id: user.id,
           pdf_summaries_today: 0,
           text_summaries_today: 0,
           last_reset: now,
-        }).eq("user_id", user.id);
-      } else {
-        pdfUsed = usageData.pdf_summaries_today || 0;
-        textUsed = usageData.text_summaries_today || 0;
-      }
+        })
+        .select()
+        .single();
+
+      usage = created;
     }
-    if ((mode === "pdf" && pdfUsed >= 1) || (mode === "text" && textUsed >= 2)) {
-      return NextResponse.json({ error: "Daily usage limit reached" }, { status: 403 });
+
+    const lastReset = new Date(usage.last_reset);
+    const isNewDay = lastReset.toDateString() !== now.toDateString();
+
+    let pdfUsed = isNewDay ? 0 : usage.pdf_summaries_today || 0;
+    let textUsed = isNewDay ? 0 : usage.text_summaries_today || 0;
+
+    if (isNewDay) {
+      await supabase
+        .from("usage_limits")
+        .update({
+          pdf_summaries_today: 0,
+          text_summaries_today: 0,
+          last_reset: now,
+        })
+        .eq("user_id", user.id);
     }
-    if (mode === "pdf") {
-      await supabase.from("usage_limits").update({ pdf_summaries_today: pdfUsed + 1 }).eq("user_id", user.id);
-    } else {
-      await supabase.from("usage_limits").update({ text_summaries_today: textUsed + 1 }).eq("user_id", user.id);
+
+    if (
+      (mode === "pdf" && pdfUsed >= 1) ||
+      (mode === "text" && textUsed >= 2)
+    ) {
+      return NextResponse.json(
+        { error: "Daily usage limit reached" },
+        { status: 403 }
+      );
     }
 
     const finalText = mode === "text" ? text : doc.content;
-    summarizeDocument(documentId, finalText);
+
+    await summarizeDocument(documentId, finalText);
+
+    if (mode === "pdf") {
+      await supabase
+        .from("usage_limits")
+        .update({ pdf_summaries_today: pdfUsed + 1 })
+        .eq("user_id", user.id);
+    } else {
+      await supabase
+        .from("usage_limits")
+        .update({ text_summaries_today: textUsed + 1 })
+        .eq("user_id", user.id);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
+    console.error("Summarize error:", err);
+
     await supabase
       .from("summaries")
       .update({ status: "failed" })
       .eq("document_id", documentId);
 
-    return NextResponse.json({ error: "failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to summarize document" },
+      { status: 500 }
+    );
   }
 }

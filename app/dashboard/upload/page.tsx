@@ -5,19 +5,39 @@ import { useEffect, useState } from "react";
 import { getUsageAction, handleUploadDocument } from "./actions";
 import { extractTextFromPDF } from "@/lib/pdf";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+const TEXT_MIN = 100;
+const TEXT_MAX = 15000;
+const PDF_MAX_MB = 5;
 
 export default function UploadPage() {
-  const mode = useSearchParams().get("mode"); 
+  const mode = useSearchParams().get("mode");
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [usage, setUsage] = useState<any>(null);
+  const [usage, setUsage] = useState<any | null>(null);
+  const [usageLoading, setUsageLoading] = useState(true);
 
   useEffect(() => {
-    getUsageAction().then(setUsage);
-  }, [])
+    async function loadUsage() {
+      try {
+        const data = await getUsageAction();
+        setUsage(data);
+        setText("")
+        setFile(null)
+        setTitle("")
+        setLoading(false);
+      } finally {
+        setUsageLoading(false);
+      }
+    }
+
+    loadUsage();
+  }, []);
+
 
   useEffect(() => {
     if (!mode) {
@@ -32,20 +52,38 @@ export default function UploadPage() {
 
 
   const handleSubmit = async () => {
-    if (!title.trim()) return alert("Please add a title ✏️");
+    if (!title.trim()) {
+      return toast.error("Please add a document title");
+    }
 
-    if (mode === "pdf" && !file)
-      return alert("Please upload a PDF 📄");
+    if (mode === "text") {
+      if (!text.trim()) {
+        return toast.error("Please paste some content");
+      }
+      if (text.length < TEXT_MIN) {
+        return toast.error(`Text must be at least ${TEXT_MIN} characters`);
+      }
+      if (text.length > TEXT_MAX) {
+        return toast.error(`Text cannot exceed ${TEXT_MAX} characters`);
+      }
+    }
 
-    if (mode === "text" && !text.trim())
-      return alert("Please paste some text ✍️");
-
+    if (mode === "pdf") {
+      if (!file) {
+        return toast.error("Please upload a PDF file");
+      }
+      const sizeMB = file.size / (1024 * 1024);
+      if (sizeMB > PDF_MAX_MB) {
+        return toast.error(`PDF must be under ${PDF_MAX_MB} MB`);
+      }
+    }
     setLoading(true);
 
     try {
-      let extractedText = text;
+      let extractedText = text.trim();
 
       if (mode === "pdf" && file) {
+        toast.loading("Extracting text from PDF...");
         extractedText = await extractTextFromPDF(file);
       }
 
@@ -54,9 +92,10 @@ export default function UploadPage() {
         file: mode === "pdf" ? file : null,
         text: extractedText
       });
+      toast.success("Document uploaded successfully");
       router.push(`/dashboard/summarize/${doc.id}`);
     } catch (e: any) {
-      alert(e.message);
+      toast.error(e.message || "Something went wrong");
     } finally {
       setLoading(false);
       setText("");
@@ -65,12 +104,17 @@ export default function UploadPage() {
     }
   };
 
-  const pdfRemaining = usage ? Math.max(1 - (usage.pdf_summaries_today || 0), 0) : 0;
-  const textRemaining = usage ? Math.max(2 - (usage.text_summaries_today || 0), 0) : 0;
+
+  const pdfRemaining =
+    usage ? Math.max(1 - (usage.pdf_summaries_today ?? 0), 0) : 1;
+  const textRemaining =
+    usage ? Math.max(2 - (usage.text_summaries_today ?? 0), 0) : 2;
 
   const limitReached =
-    (mode === "pdf" && pdfRemaining === 0) ||
-    (mode === "text" && textRemaining === 0);
+    !usageLoading &&
+    ((mode === "pdf" && pdfRemaining === 0) ||
+      (mode === "text" && textRemaining === 0));
+
 
   return (
     <div className="">
@@ -105,7 +149,15 @@ export default function UploadPage() {
           </div>
 
           {mode === "pdf" && (
-            <label className="block cursor-pointer">
+            <label
+              className="block cursor-pointer"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const droppedFile = e.dataTransfer.files[0];
+                if (droppedFile) setFile(droppedFile);
+              }}
+            >
               <input
                 type="file"
                 accept="application/pdf"
@@ -120,7 +172,10 @@ export default function UploadPage() {
                       Upload a PDF file
                     </p>
                     <p className="text-sm text-gray-500 max-w-sm mx-auto">
-                      Best results with text-based PDFs. Avoid scanned images.
+                      PDF only • Max {PDF_MAX_MB} MB • Text-based PDFs recommended
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Avoid scanned or image-only PDFs for best results
                     </p>
                   </div>
                 ) : (
@@ -142,29 +197,49 @@ export default function UploadPage() {
               <label className="text-sm font-medium text-gray-900">
                 Paste your content
               </label>
-              <textarea
-                rows={9}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Paste notes, syllabus, interview prep, or any topic here…"
-                className="w-full rounded-2xl border px-4 py-4 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <p className="text-xs text-gray-500">
-                Clean, structured text gives better summaries.
+
+              <div className="relative">
+                <textarea
+                  rows={9}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Paste notes, syllabus, interview prep, or any topic here…"
+                  className="w-full rounded-2xl border px-4 py-4 pr-20
+        text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+
+                {/* bottom-right counter */}
+                <span
+                  className={`absolute bottom-3 right-4 text-xs
+        ${text.length > TEXT_MAX || text.length < TEXT_MIN
+                      ? "text-red-500"
+                      : "text-gray-400"
+                    }`}
+                >
+                  {text.length}/{TEXT_MAX}
+                </span>
+              </div>
+
+              <p className="text-xs text-gray-400">
+                Minimum {TEXT_MIN} characters • Clean, structured text gives better summaries.
               </p>
             </div>
+
           )}
 
           <button
             onClick={handleSubmit}
-            disabled={loading || limitReached}
-            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-blue-500 text-white py-4 text-base font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            disabled={loading || usageLoading || limitReached}
+            className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-blue-500
+             text-white py-4 font-semibold disabled:opacity-50"
           >
-            {limitReached
-              ? "Daily limit reached"
-              : loading
-                ? "Generating summary…"
-                : "Generate summary"}
+            {usageLoading
+              ? "Checking limits..."
+              : limitReached
+                ? "Daily limit reached"
+                : loading
+                  ? "Generating summary…"
+                  : "Generate summary"}
           </button>
         </div>
       </div>

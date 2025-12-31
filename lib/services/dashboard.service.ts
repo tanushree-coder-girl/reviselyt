@@ -1,22 +1,20 @@
-// dashboard.service.ts
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
 
 export async function getDashboardDataService() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
     error: userError,
-  } = await (await supabase).auth.getUser();
+  } = await supabase.auth.getUser();
 
   if (!user || userError) {
     throw new Error("User not authenticated");
   }
 
-  // Fetch documents
-  const { data: documents, error: docError } = await (await supabase)
+  const { data: documents, error: docError } = await supabase
     .from("documents")
     .select(`
       id,
@@ -33,19 +31,44 @@ export async function getDashboardDataService() {
     throw new Error("Failed to fetch documents");
   }
 
-  // Fetch usage limits
-  const { data: usage, error: usageError } = await (await supabase)
+  const { data: usage, error: usageError } = await supabase
     .from("usage_limits")
     .select("*")
     .eq("user_id", user.id)
     .single();
 
-  if (usageError && usageError.code !== "PGRST116") {
-    console.error("Failed to fetch usage:", usageError);
+  let finalUsage = usage;
+
+  if (usage) {
+    const lastReset = new Date(usage.last_reset);
+    const today = new Date();
+
+    const isNewDay =
+      lastReset.toDateString() !== today.toDateString();
+
+    if (isNewDay) {
+      const { data: updatedUsage, error: updateError } = await supabase
+        .from("usage_limits")
+        .update({
+          pdf_summaries_today: 0,
+          text_summaries_today: 0,
+          last_reset: today,
+        })
+        .eq("user_id", user.id)
+        .select()
+        .single();
+
+      if (!updateError) {
+        finalUsage = updatedUsage;
+      }
+    }
   }
 
   return {
     documents: documents || [],
-    usage: usage || { pdf_summaries_today: 0, text_summaries_today: 0 },
+    usage: finalUsage || {
+      pdf_summaries_today: 0,
+      text_summaries_today: 0,
+    },
   };
 }

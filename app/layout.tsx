@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import {Toaster} from "sonner";
 import "./globals.css";
-import "@/lib/jobs/cron";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -11,7 +11,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: {
-    default: "Reviselyt — AI Study & Interview Summarizer",
+    default: "Reviselyt - AI Study & Interview Summarizer",
     template: "%s | Reviselyt",
   },
   description:
@@ -71,6 +71,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Toaster richColors position="top-right" />
           <main id="main" className="min-h-screen">
             {children}
           </main>

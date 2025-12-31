@@ -92,15 +92,38 @@ export async function uploadDocumentService({
 }
 
 export async function getUsage() {
-  const supabase = createClient();
-  const { data: { user } } = await (await supabase).auth.getUser();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data } = await (await supabase)
+  const { data: usage } = await supabase
     .from("usage_limits")
-    .select("pdf_summaries_today, text_summaries_today, last_reset")
+    .select("*")
     .eq("user_id", user.id)
     .single();
 
-  return data;
+  if (!usage) return null;
+
+  const lastReset = new Date(usage.last_reset);
+  const today = new Date();
+
+  const isNewDay =
+    lastReset.toDateString() !== today.toDateString();
+
+  if (isNewDay) {
+    const { data: updated } = await supabase
+      .from("usage_limits")
+      .update({
+        pdf_summaries_today: 0,
+        text_summaries_today: 0,
+        last_reset: today,
+      })
+      .eq("user_id", user.id)
+      .select()
+      .single();
+
+    return updated;
+  }
+
+  return usage;
 }
