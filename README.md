@@ -1,51 +1,113 @@
-# 🚀 Reviselyt
+# Reviselyt
+Reviselyt is an open-source learning tool built with Next.js, Supabase, and AI APIs to help students summarize long study material into concise bullet points.
 
-**Reviselyt** is an open-source AI-powered study and interview summarization app.
-
-The goal of this project is to help students and job seekers quickly revise
-their study material by generating **short, clear bullet-point summaries**
-from PDFs or text.
-
-This repository contains the initial setup, UI, and project structure.
-More features will be added incrementally.
+Built for students, exam preparation, and interview revision.
 
 ---
 
-## ✨ What Reviselyt Does
+## Features
 
-- Upload study material (PDF or text)
-- Generate concise bullet-point summaries
-- Designed for last-minute exam revision and interview prep
-- Simple, clean, and beginner-friendly architecture
-
----
-
-## 🛠 Tech Stack
-
-- **Next.js** (App Router)
-- **Supabase** (Auth, Database, Storage)
-- **Tailwind CSS**
-- **TypeScript**
+- Upload PDF files or paste plain text
+- AI-generated 5–10 bullet summaries
+- Daily free usage limits (Free Tier)
+  - 1 PDF summary per day
+  - 2 Text summaries per day
+- Clean and distraction-free UI
+- Secure authentication and storage
+- All summaries saved for later revision
 
 ---
 
-## 🌍 Open Source
+## Tech Stack
 
-Reviselyt is an **open-source project**.
-
-The aim is to:
-- Learn modern full-stack development
-- Build a real-world SaaS-style product
-- Allow others to explore, learn, and contribute
-
-Contributions, feedback, and ideas are welcome.
+- Next.js (App Router)
+- Typescript
+- Tailwind CSS
+- Supabase (Auth + Database)
+- Hugging Face (AI models)
+- Pixabay API (visual assets)
 
 ---
 
-## 📄 License
+## Free Tier Limits
 
-This project is licensed under the **MIT License**.
+| Feature | Limit |
+|------|------|
+| PDF Summaries | 1 per day |
+| Text Summaries | 2 per day |
+
+Limits reset automatically every day.
 
 ---
 
-Built with ❤️ using Next.js & Supabase
+## Local Development Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/reviselyt.git
+cd reviselyt
+```
+
+
+### 2. Install dependencies
+
+
+Using npm
+
+```bash
+npm install
+```
+
+Or using yarn:
+
+```bash
+yarn install
+```
+
+### 3. Environment Variables
+
+Create a .env.local file using the example below.
+```bash
+cp .env.example .env.local
+```
+
+Fill in your own values.
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+HF_API_TOKEN=
+PIXABAY_API_KEY=
+```
+
+### 4. Run the project locally
+```bash
+npm run dev
+```
+or
+```bash
+yarn dev
+```
+
+Visit:
+```bash
+http://localhost:3000
+```
+### Open Source
+
+Reviselyt is built in public and open source.
+Issues, feature requests, and pull requests are welcome.
+
+If you find this project useful, please consider starring the repository.
+
+### License
+
+Reviselyt is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+This means:
+- You are free to use, study, and modify the code.
+- If you deploy this project as a web service or SaaS, you **must make your source code public**.
+- You are **not allowed to take this project, modify it, and sell it as a closed-source product**.
+
+See the [LICENSE](./LICENSE) file for full details.
