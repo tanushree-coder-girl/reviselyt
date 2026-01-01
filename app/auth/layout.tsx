@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 
 export default async function AuthLayout({
     children,
@@ -24,12 +25,14 @@ export default async function AuthLayout({
         bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 text-white
         px-6 md:px-10 space-y-4"
             >
-                <Image
-                    src="/logo.png"
-                    alt="Reviselyt Logo"
-                    width={120}
-                    height={40}
-                />
+                <Link href={"/"}>
+                    <Image
+                        src="/logo.png"
+                        alt="Reviselyt Logo"
+                        width={120}
+                        height={40}
+                    />
+                </Link>
 
                 <h1 className="text-4xl font-extrabold text-center max-w-xl">
                     Welcome to Reviselyt

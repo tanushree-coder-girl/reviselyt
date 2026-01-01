@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { Suspense } from "react";
+import Loading from "./loading";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -68,13 +69,13 @@ export default function RootLayout({
 
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
           <Toaster richColors position="top-right" />
 
-          <Suspense fallback="<div>loading...</div>">
+          <Suspense fallback="<Loading />">
             <main id="main" className="min-h-screen">
               {children}
             </main>
