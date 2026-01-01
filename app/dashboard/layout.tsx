@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Header */}
       <Header variant="dashboard" user={user} onLogout={handleLogout} />
       {/* Main content */}
-      <section className="flex-1 mx-auto w-full max-w-7xl p-6 min-h-screen">{children}</section>
+      <section className="flex-1 mx-auto w-full max-w-6xl p-6 min-h-screen">{children}</section>
 
       {/* Footer */}
       <footer className="border-t py-4 text-xs text-center text-gray-500">

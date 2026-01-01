@@ -5,3 +5,5 @@ export { default as Hero } from "./Hero";
 export { default as Purpose } from "./Purpose";
 export { default as WhyOpenSource } from "./WhyOpenSource";
 export { default as Footer } from "./Footer";
+export { default as UseCases } from "./UseCases";
+export { default as FreeTier } from "./FreeTier";

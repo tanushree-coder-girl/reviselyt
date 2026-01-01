@@ -1,4 +1,4 @@
-import { Footer, Hero, CTA, WhyOpenSource, Purpose, Features } from "./components";
+import { Footer, Hero, CTA, WhyOpenSource, Purpose, Features, FreeTier, UseCases } from "./components";
 import Header from "@/components/common/Header";
 
 export default function Home() {
@@ -8,7 +8,9 @@ export default function Home() {
       <Hero />
       <Features />
       <Purpose />
+      <UseCases />
       <WhyOpenSource />
+      <FreeTier />
       <CTA />
       <Footer />
     </main>
