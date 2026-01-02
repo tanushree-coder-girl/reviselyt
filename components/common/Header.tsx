@@ -27,6 +27,11 @@ export default function Header({
               width={80}
               height={50}
               priority
+              className="
+        w-[60px] h-auto      
+        sm:w-[70px] 
+        md:w-[80px]     
+      "
             />
           </div>
         </Link>

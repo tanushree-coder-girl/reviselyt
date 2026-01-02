@@ -1,14 +1,21 @@
-// dashboard/page.tsx
-import Link from "next/link";
-import ActionCard from "./components/ActionCard";
-import DocumentsTable from "./components/DocumentsTable";
 import { getDashboardData } from "./actions";
 import DashboardActions from "./components/DashboardActions";
+import AllDocuments from './components/AllDocuments'
 
 export const dynamic = "force-dynamic";
 
-export default async function Dashboard() {
-  const { documents, usage } = await getDashboardData();
+interface DashboardPageProps {
+  searchParams?: Promise<{ page?: string }>;
+}
+export default async function Dashboard(props: DashboardPageProps) {
+  const searchParams = props.searchParams ? await props.searchParams : {};
+  const page = searchParams.page ?  Number(searchParams?.page) : 1;
+  const limit = 10;
+  const {
+    documents,
+    totalPages,
+    usage,
+  } = await getDashboardData(page, limit);
 
   const pdfRemaining = Math.max(1 - (usage.pdf_summaries_today || 0), 0);
   const textRemaining = Math.max(2 - (usage.text_summaries_today || 0), 0);
@@ -84,7 +91,11 @@ export default async function Dashboard() {
         </ul>
       </section>
 
-      <DocumentsTable documents={documents || []} />
+      <AllDocuments
+        initialDocuments={documents}
+        totalPages={totalPages}
+        initialPage={page}
+      />
     </div>
   );
 }

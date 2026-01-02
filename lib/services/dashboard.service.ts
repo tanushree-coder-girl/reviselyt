@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-export async function getDashboardDataService() {
+export async function getDashboardDataService(page = 1, limit = 10) {
   const supabase = await createClient();
 
   const {
@@ -14,7 +14,10 @@ export async function getDashboardDataService() {
     throw new Error("User not authenticated");
   }
 
-  const { data: documents, error: docError } = await supabase
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { data: documents, count, error: docError} = await supabase
     .from("documents")
     .select(`
       id,
@@ -22,9 +25,10 @@ export async function getDashboardDataService() {
       file_type,
       created_at,
       summaries(id)
-    `)
+    `, { count: "exact" })
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (docError) {
     console.error("Failed to fetch documents:", docError);
@@ -66,6 +70,7 @@ export async function getDashboardDataService() {
 
   return {
     documents: documents || [],
+    totalPages: Math.ceil((count || 0) / limit),
     usage: finalUsage || {
       pdf_summaries_today: 0,
       text_summaries_today: 0,

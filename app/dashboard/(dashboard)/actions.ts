@@ -2,9 +2,9 @@
 
 import { getDashboardDataService, deleteDocumentService } from "@/lib/services/dashboard.service";
 
-export async function getDashboardData() {
+export async function getDashboardData(page = 1, limit = 10) {
   try {
-    const data = await getDashboardDataService();
+    const data = await getDashboardDataService(page, limit);
     return data;
   } catch (error: any) {
     console.error("getDashboardData action error:", error);
