@@ -54,7 +54,7 @@ export default async function SummaryPage({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
+    <div className="max-w-6xl mx-auto py-10 space-y-8">
       <SummaryTrigger
         status={summary.status}
         documentId={id}
@@ -72,7 +72,7 @@ export default async function SummaryPage({
 
       <div className="grid md:grid-cols-2 gap-6">
 
-        <div className="border rounded-xl p-6 bg-white">
+        <div className="border rounded-xl py-4 px-4 bg-white">
           <h2 className="font-semibold mb-2">
             {summary?.documents?.title}
           </h2>
@@ -102,7 +102,7 @@ export default async function SummaryPage({
           )}
         </div>
 
-        <div className="border rounded-xl p-6 bg-gradient-to-b from-purple-50 to-white">
+        <div className="border rounded-xl px-4 py-4 bg-gradient-to-b from-purple-50 to-white">
           <h2 className="font-semibold mb-4">
             Generated Summary
           </h2>

@@ -118,7 +118,7 @@ export default function UploadPage() {
 
   return (
     <div className="">
-      <div className="max-w-4xl mx-auto px-6 py-20 space-y-16">
+      <div className="max-w-4xl mx-auto py-20 space-y-16">
         <div className="text-center space-y-5">
           <span className="inline-flex items-center px-4 py-1.5 text-xs rounded-full border border-purple-300 text-purple-700 font-medium">
             {mode === "pdf" ? "PDF SUMMARIZATION" : "TEXT SUMMARIZATION"}
