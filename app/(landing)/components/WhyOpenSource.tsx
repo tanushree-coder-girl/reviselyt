@@ -13,20 +13,21 @@ const OpenSourceTrust = () => {
             </span>
           </h2>
           <p className="text-gray-700 text-base sm:text-lg md:text-lg leading-relaxed">
-            Software should empower learners — not trap them. Reviselyt is built as an open-source product because we believe learners should own their tools — not rent them.
+            Software should empower learners — not trap them. Reviselyt is built as an open-source product because we believe learners should own their tools, not rent them.
+          </p>
+
+          <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
+            Reviselyt is built on open-source AI models with privacy at its core. We don’t sell user data, we don’t track learning behavior, and your documents are processed only to generate summaries — nothing more.
           </p>
 
           <p className="text-gray-700 text-base sm:text-lg md:text-lg leading-relaxed">
-            You get the simplicity of SaaS with the freedom, transparency, and cost savings of open source.
+            Building in public means your feedback directly shapes how Reviselyt evolves — openly, responsibly, and with trust.
           </p>
 
           <p className="text-gray-700 text-base sm:text-lg md:text-lg leading-relaxed">
-            Building in public means your feedback directly shapes how the product evolves — openly, responsibly, and with trust.
+           Powered by open-source AI models — fully transparent and built for learners.
           </p>
 
-          <p className="text-gray-700 text-base sm:text-lg md:text-lg leading-relaxed">
-            Reviselyt is powered by open-source AI models — fully transparent, and built for learners.
-          </p>
           <div className="mt-4 flex justify-center md:justify-start">
             <Link
               href="https://github.com/tanushree-coder-girl/reviselyt"

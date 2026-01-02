@@ -60,8 +60,11 @@ const FreePlan = () => {
               <p className="text-gray-700 text-base sm:text-lg">{benefit}</p>
             </div>
           ))}
-        </div>
 
+          <p className="text-sm ml-9 sm:text-base text-gray-700">
+            <span className="text-red-900">Note</span> - Processing usually takes 10–30 seconds depending on document size.
+          </p>
+        </div>
       </div>
     </section>
   );

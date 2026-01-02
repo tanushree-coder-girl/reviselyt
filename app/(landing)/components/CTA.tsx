@@ -8,8 +8,8 @@ const CTA = () => {
         <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
           Stop rereading. Revise smarter.
         </h2>
-        <p className="text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto text-gray-700">
-          Upload your PDF or notes and get clear, concise bullet points for quick revision — no sign-up, no cost.
+        <p className="text-base sm:text-lg md:text-xl leading-relaxed max-w-3xl mx-auto text-gray-700">
+          Upload your PDF or notes and get clear, concise bullet points for quick revision — free, open source, and continuously improving based on user feedback.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-2">
           <Link
@@ -53,6 +53,7 @@ const CTA = () => {
             View on GitHub
           </Link>
         </div>
+
       </div>
     </section>
   );
