@@ -83,7 +83,6 @@ export default function UploadPage() {
       let extractedText = text.trim();
 
       if (mode === "pdf" && file) {
-        toast.loading("Extracting text from PDF...");
         extractedText = await extractTextFromPDF(file);
       }
 

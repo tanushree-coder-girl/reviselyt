@@ -5,6 +5,7 @@ import { SummaryTrigger } from "./components/SummaryTrigger";
 import { getSummaryByIDAction, getPDFSignedUrlAction } from "./action";
 import { SummaryGenerating } from "./components/SummaryLoading";
 import { fetchImageForSummary } from "@/lib/utils";
+import { ArrowLeftIcon, ScanEye } from "lucide-react";
 
 export default async function SummaryPage({
   params,
@@ -66,27 +67,33 @@ export default async function SummaryPage({
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Summary</h1>
         <Link href="/dashboard" className="text-purple-600 underline">
-          ← Back
+          <span className="flex items-center gap-1"> <ArrowLeftIcon size={20} /> Back </span>
         </Link>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
 
         <div className="border rounded-xl py-4 px-4 bg-white">
-          <h2 className="font-semibold mb-2">
-            {summary?.documents?.title}
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-semibold truncate">
+              {summary?.documents?.title}
+            </h2>
+
+            {pdfUrl && summary.status === "completed" && (
+              <a
+                href={pdfUrl}
+                target="_blank"
+                title="View PDF"
+                className="text-purple-600 hover:text-purple-800 transition"
+              >
+                <ScanEye className="w-5 h-5" />
+              </a>
+            )}
+          </div>
 
           {summary.status === "completed" && summary?.documents?.file_type === "pdf" ? (
             pdfUrl ? (
               <>
-                <a
-                  href={pdfUrl}
-                  target="_blank"
-                  className="text-sm text-purple-600 underline"
-                >
-                  Open PDF →
-                </a>
                 <iframe
                   src={pdfUrl}
                   className="w-full h-[600px] mt-2 border rounded"

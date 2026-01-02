@@ -72,3 +72,38 @@ export async function getDashboardDataService() {
     },
   };
 }
+
+export async function deleteDocumentService(documentId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (!user || userError) {
+    throw new Error("User not authenticated");
+  }
+
+  const { error: summaryError } = await supabase
+    .from("summaries")
+    .delete()
+    .eq("document_id", documentId);
+
+  if (summaryError) {
+    console.error("Failed to delete summaries:", summaryError);
+    throw new Error("Failed to delete summaries");
+  }
+
+  const { error: documentError } = await supabase
+    .from("documents")
+    .delete()
+    .eq("id", documentId)
+    .eq("user_id", user.id);
+
+  if (documentError) {
+    console.error("Failed to delete document:", documentError);
+    throw new Error("Failed to delete document");
+  }
+
+  return { success: true };
+}

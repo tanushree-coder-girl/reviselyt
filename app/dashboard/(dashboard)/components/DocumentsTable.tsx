@@ -1,6 +1,41 @@
+"use client"
 import Link from "next/link";
+import { Eye, Trash2, FileText, AlignLeft } from "lucide-react";
+import { deleteDocumentAction } from "../actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import DeleteConfirmModal from "./DeleteConfirmModal";
 
 function DocumentsTable({ documents }: { documents: any[] }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const openDeleteModal = (id: string) => {
+    setSelectedId(id);
+    setOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedId) return;
+
+    try {
+      setLoading(true);
+      await deleteDocumentAction(selectedId);
+      router.refresh()
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete document");
+    } finally {
+      setLoading(false);
+      setSelectedId(null);
+    }
+  };
+
+
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
       <table className="w-full text-base border-collapse">
@@ -40,72 +75,47 @@ function DocumentsTable({ documents }: { documents: any[] }) {
                 <td className="p-5 text-center flex items-center justify-center gap-2">
                   {doc.file_type === "pdf" ? (
                     <>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-purple-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 8v4l3 3m6 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      PDF
+                      <FileText className="h-5 w-5 text-purple-600" />
+                      <span>PDF</span>
                     </>
                   ) : (
                     <>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-blue-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 12h6m-6 4h6m-6-8h6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      Text
+                      <AlignLeft className="h-5 w-5 text-blue-600" />
+                      <span>Text</span>
                     </>
                   )}
                 </td>
                 <td className="p-5 text-center text-gray-700">
                   {new Date(doc.created_at).toLocaleDateString()}
                 </td>
-                <td className="p-5 text-center">
-                  {doc.summaries?.length > 0 ? (
-                    <Link
-                      href={`/dashboard/summarize/${doc.id}`}
-                      className="text-purple-600 hover:underline font-medium"
-                    >
-                      View Summary →
-                    </Link>
-                  ) : (
-                    <span className="text-gray-500 text-base">
-                      No summary yet. Start by{" "}
-                      <Link
-                        href={`/dashboard/upload?mode=${doc.file_type}`}
-                        className="text-purple-600 hover:underline"
-                      >
-                        uploading
-                      </Link>{" "}
-                      or{" "}
-                      <Link
-                        href={`/dashboard/upload?mode=${doc.file_type}`}
-                        className="text-purple-600 hover:underline"
-                      >
-                        pasting text
-                      </Link>
-                      .
-                    </span>
-                  )}
+                <td className="p-5">
+                  <div className="flex items-center justify-center gap-4">
+                    {doc.summaries?.length > 0 && (
+                      <>
+                        <Link
+                          href={`/dashboard/summarize/${doc.id}`}
+                          className="flex items-center gap-1 text-purple-600 hover:text-purple-800 transition"
+                          title="View Summary"
+                        >
+                          <Eye size={20} />
+                        </Link>
+
+                        <button
+                          onClick={() => openDeleteModal(doc.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 size={20} />
+                        </button>
+
+                        <DeleteConfirmModal
+                          open={open}
+                          onClose={() => !loading && setOpen(false)}
+                          onConfirm={handleDelete}
+                          loading={loading}
+                        />
+                      </>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))
