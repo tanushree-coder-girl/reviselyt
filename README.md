@@ -1,80 +1,174 @@
-# Reviselyt
-Reviselyt is an open-source learning tool built with Next.js, Supabase, and AI APIs to help students summarize long study material into concise bullet points.
-
-Built for students, exam preparation, and interview revision.
-
----
-If you find this project useful, please consider starring the repository.
+<h1 align="center" style="border-bottom: none">
+  <img src="public/Reviselyt.png" alt="Reviselyt Logo" style="border-radius:10px" width="90" height="90" />
+  <br />
+  Reviselyt
+</h1>
 
 <p align="center">
-    <img src="public/Reviselyt-dashboard.png" alt="Reviselty dashboard showing previous generated summaries"/>
+  <b>Reviselyt</b> is a free and open-source learning tool that helps students and developers turn long PDFs and notes into concise, revision-ready bullet points using open-source AI models. Built with Next.js, Supabase, and AI APIs, it is designed for faster learning, exam preparation, interview revision, and everyday knowledge refresh
 </p>
 
 <p align="center">
-    <img src="public/summary.png" alt="Reviselty summary page showing summary generate from text"/>
+  ⭐ If you find this project useful, please consider starring the repository.
 </p>
 
-## Features
+<hr/>
 
-- Upload PDF files or paste plain text
-- AI-generated 5–10 bullet summaries
-- Daily free usage limits (Free Tier)
-  - 1 PDF summary per day
-  - 2 Text summaries per day
-- Clean and distraction-free UI
-- Secure authentication and storage
-- All summaries saved for later revision
+<h2>How It Works</h2>
 
----
+<ol>
+    <li>Upload PDF files or paste plain text</li>
+    <li>AI generates 5–10 concise bullet points</li>
+    <li>Powered by open-source transformer models</li>
+    <li>Summaries are saved for future revision</li>
+    <li>Daily free usage limits (Free Tier)</li>
+    <li>Clean and distraction-free user interface</li>
+  <li>Secure authentication and document storage</li>
+</ol>
 
-## Tech Stack
+<p><i>⏱ Processing may take 10–30 seconds depending on content length.</i></p>
 
-- Next.js (App Router)
-- Typescript
-- Tailwind CSS
-- Supabase (Auth + Database)
-- Hugging Face (AI models)
-- Pixabay API (visual assets)
+<hr/>
 
----
+<h2>Key Features</h2>
 
-## Free Tier Limits
+<h3>Dashboard Management</h3>
+<p>
+The dashboard gives you a complete overview of all your generated summaries in one place.
+You can quickly track your previous documents, check their type (PDF or Text),
+and manage them with ease.
+</p>
 
-| Feature | Limit |
-|------|------|
-| PDF Summaries | 1 per day |
-| Text Summaries | 2 per day |
+<p>
+Each document entry provides quick actions to <b>view</b> the generated summary
+or <b>delete</b> it whenever needed. Pagination support ensures smooth navigation
+even when you have multiple summaries.
+</p>
 
-Limits reset automatically every day.
+<p>
+At the top of the dashboard, quick action cards allow you to start instantly by
+uploading a PDF or generating a summary from plain text.
+</p>
 
----
+<p align="center">
+  <img src="public/dashboard.png" alt="Dashboard with upload cards and documents table" width="900"/>
+</p>
 
-## Local Development Setup
+<hr/>
 
-### 1. Clone the repository
+<h3>PDF & Text Upload</h3>
+<p>
+Reviselyt supports both PDF-based and text-based summarization.
+For text summaries, simply provide a title and paste your content.
+For PDFs, upload a text-based document, add a title, and submit it for processing.
+</p>
 
-```bash
-git clone https://github.com/your-username/reviselyt.git
-cd reviselyt
-```
+<p>
+The upload experience is intentionally minimal and distraction-free,
+allowing you to generate summaries within seconds without unnecessary steps.
+</p>
+
+<p align="center">
+  <img src="public/upload-text.png" alt="Upload page for PDF and text summarization" width="900"/>
+</p>
+
+<hr/>
+
+<h2>Summary View</h2>
+<p>
+Once the summary is generated, Reviselyt presents the content in a side-by-side layout.
+The original material appears on one side, while the AI-generated bullet summary
+is displayed on the other — making revision faster and more effective.
+</p>
+
+<h4>Text-based Summary</h4>
+<p>
+For pasted text, the summary view helps you quickly scan key points
+without rereading long paragraphs.
+</p>
+
+<p align="center">
+  <img src="public/summaryFromText.png" alt="Text based summary view" width="900"/>
+</p>
+
+<h4>PDF-based Summary</h4>
+<p>
+For PDF uploads, Reviselyt extracts the text and generates structured bullet points,
+allowing you to revise large documents efficiently.
+</p>
+
+<p align="center">
+  <img src="public/summaryFromPDF.png" alt="PDF based summary view" width="900"/>
+</p>
+
+<hr/>
+
+<h2>Free Tier Limits</h2>
+
+<table>
+  <tr>
+    <th align="left">Feature</th>
+    <th align="left">Limit</th>
+  </tr>
+  <tr>
+    <td>PDF Summaries</td>
+    <td>1 per day</td>
+  </tr>
+  <tr>
+    <td>Text Summaries</td>
+    <td>2 per day</td>
+  </tr>
+</table>
+
+<p>Limits reset automatically every day.</p>
+
+<hr/>
+
+<h2>Tech Stack</h2>
+
+<ul>
+  <li>Next.js (App Router)</li>
+  <li>TypeScript</li>
+  <li>Tailwind CSS</li>
+  <li>Supabase (Authentication & Database)</li>
+  <li>Hugging Face (AI models)</li>
+  <li>Pixabay API (Visual assets)</li>
+</ul>
+
+<hr/>
+
+<h2>Open Source</h2>
+<p>
+Reviselyt is built in public and open source.
+<br /> Issues, feature requests, and pull requests are welcome.
+</p>
+
+<ul>
+  <li>Powered by open-source transformer models</li>
+  <li>AI-powered summaries using public models</li>
+  <li>No user data is sold or tracked</li>
+  <li>Content is processed only to generate summaries</li>
+</ul>
 
 
-### 2. Install dependencies
+<hr/>
 
+<hr/>
 
-Using npm
+<h2>Local Development Setup</h2>
 
-```bash
-npm install
-```
+<h3>1. Clone the repository</h3>
 
-Or using yarn:
+<pre><code>git clone https://github.com/tanushree-coder-girl/reviselyt.git
+cd reviselyt</code></pre>
 
-```bash
-yarn install
-```
+<h3>2. Install dependencies</h3>
 
-### 3. Environment Variables
+<pre><code>npm install
+# or
+yarn install</code></pre>
+
+<h3>3. Environment Variables</h3>
 
 Create a .env.local file using the example below.
 ```bash
@@ -90,31 +184,28 @@ HF_API_TOKEN=
 PIXABAY_API_KEY=
 ```
 
-### 4. Run the project locally
-```bash
-npm run dev
-```
-or
-```bash
-yarn dev
-```
+<h3>4. Run locally</h3>
 
-Visit:
-```bash
-http://localhost:3000
-```
-### Open Source
+<pre><code>npm run dev</code></pre>
 
-Reviselyt is built in public and open source.
-Issues, feature requests, and pull requests are welcome.
+<p>Visit <code>http://localhost:3000</code></p>
 
-### License
+<hr/>
 
-Reviselyt is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+<hr/>
 
-This means:
-- You are free to use, study, and modify the code.
-- If you deploy this project as a web service or SaaS, you **must make your source code public**.
-- You are **not allowed to take this project, modify it, and sell it as a closed-source product**.
+<h2>Contributing</h2>
+
+<p>
+Contributions are welcome!  
+Please check <a href="./CONTRIBUTING.md">CONTRIBUTING.md</a> for guidelines before getting started.
+</p>
+
+<hr/>
+
+<h2>License</h2>
+<p>
+Licensed under the <b>GNU Affero General Public License v3.0 (AGPL-3.0)</b>.
+</p>
 
 See the [LICENSE](./LICENSE) file for full details.
