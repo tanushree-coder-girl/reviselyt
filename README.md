@@ -192,6 +192,21 @@ PIXABAY_API_KEY=
 
 <hr/>
 
+<h3>Supabase Setup</h3>
+<p>
+Reviselyt uses Supabase for authentication and storing documents and summaries.
+To run the project locally, you need to set up your own Supabase project:
+</p>
+
+<ol>
+  <li>Create a new project on <a href="https://supabase.com" target="_blank">Supabase</a>.</li>
+  <li>Set up the tables by running <code>lib/supabase/schema.sql</code> provided in the repo.</li>
+  <li>Update your <code>.env.local</code> with your own Supabase URL and API keys.</li>
+  <li>The app will now store documents, summaries, and usage limits in your own database.</li>
+</ol>
+
+<hr/>
+
 <h2>Contributing</h2>
 
 <p>
