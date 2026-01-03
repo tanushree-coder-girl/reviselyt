@@ -192,8 +192,6 @@ PIXABAY_API_KEY=
 
 <hr/>
 
-<hr/>
-
 <h2>Contributing</h2>
 
 <p>
