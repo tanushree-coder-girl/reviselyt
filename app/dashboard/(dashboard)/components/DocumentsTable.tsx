@@ -8,7 +8,7 @@ import { useState } from "react";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import TableLoader from "./TableLoader";
 
-function DocumentsTable({ documents, isLoading }: { documents: any[], isLoading: boolean }) {
+function DocumentsTable({ documents, isLoading, onDeleteSuccess }: { documents: any[], isLoading: boolean, onDeleteSuccess: ()=>void }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -25,7 +25,7 @@ function DocumentsTable({ documents, isLoading }: { documents: any[], isLoading:
     try {
       setLoading(true);
       await deleteDocumentAction(selectedId);
-      router.refresh()
+      onDeleteSuccess();
       setOpen(false);
     } catch (err) {
       console.error(err);

@@ -19,7 +19,7 @@ export default function AllDocuments({ initialDocuments, totalPages, initialPage
 
   return (
     <div className="space-y-10">
-      {<DocumentsTable documents={documents} isLoading={loading} />}
+      {<DocumentsTable documents={documents} isLoading={loading}  onDeleteSuccess={() => fetchPage(page)} />}
       <Pagination page={page} totalPages={totalPages} onPageChange={fetchPage} />
     </div>
   );
