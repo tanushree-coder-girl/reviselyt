@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     title: "Reviselyt",
     description:
       "AI-powered last-minute exam & interview revision tool.",
-    images: `${defaultUrl}/og-image.png`,
+    images: `${defaultUrl}/og-image.jpg`,
   },
 };
 
