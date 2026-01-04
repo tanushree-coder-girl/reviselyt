@@ -17,6 +17,12 @@ export function SummaryTrigger({
   const fired = useRef(false);
 
   useEffect(() => {
+    if (status !== "pending") {
+      fired.current = false;
+    }
+  }, [status]);
+
+  useEffect(() => {
     if (status === "pending" && !fired.current) {
       fired.current = true;
 

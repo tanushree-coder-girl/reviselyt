@@ -6,6 +6,7 @@ import { getSummaryByIDAction, getPDFSignedUrlAction } from "./action";
 import { SummaryGenerating } from "./components/SummaryLoading";
 import { fetchImageForSummary } from "@/lib/utils";
 import { ArrowLeftIcon, ScanEye } from "lucide-react";
+import { RetrySummaryButton } from "./components/RetrySummaryButton";
 
 export default async function SummaryPage({
   params,
@@ -119,11 +120,23 @@ export default async function SummaryPage({
           )}
 
           {summary.status === "failed" && (
-            <p className="text-red-500 text-center py-20">
-              Failed to generate summary
-            </p>
-          )}
+            <div className="text-center py-20 space-y-4">
+              <p className="text-red-500 text-center">
+                Failed to generate summary
+              </p>
 
+              <RetrySummaryButton
+                documentId={id}
+                mode={summary.documents.file_type}
+                text={
+                  summary.documents.file_type === "text"
+                    ? summary.documents.content
+                    : null
+                }
+              />
+
+            </div>
+          )}
           {summary.status === "completed" && (
             <div className="w-full h-[600px] overflow-auto">
               {summaryImage && (

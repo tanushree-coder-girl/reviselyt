@@ -85,18 +85,27 @@ export async function POST(req: Request) {
 
     const finalText = mode === "text" ? text : doc.content;
 
-    await summarizeDocument(documentId, finalText);
+    await supabase
+      .from("summaries")
+      .update({ status: "pending" })
+      .eq("document_id", documentId);
+    const success = await summarizeDocument(documentId, finalText);
 
     if (mode === "pdf") {
-      await supabase
-        .from("usage_limits")
-        .update({ pdf_summaries_today: pdfUsed + 1 })
-        .eq("user_id", user.id);
+      if (success) {
+        await supabase
+          .from("usage_limits")
+          .update({ pdf_summaries_today: pdfUsed + 1 })
+          .eq("user_id", user.id);
+      }
     } else {
-      await supabase
-        .from("usage_limits")
-        .update({ text_summaries_today: textUsed + 1 })
-        .eq("user_id", user.id);
+      if (success) {
+        await supabase
+          .from("usage_limits")
+          .update({ text_summaries_today: textUsed + 1 })
+          .eq("user_id", user.id);
+      }
+
     }
 
     return NextResponse.json({ ok: true });

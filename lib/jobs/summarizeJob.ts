@@ -47,11 +47,13 @@ export async function summarizeDocument(documentId: string, text: string) {
       .from("summaries")
       .update({ summary: summaryText, status: "completed" })
       .eq("document_id", documentId);
+    return true;
   } catch (err) {
     console.error(err);
     await supabase
       .from("summaries")
       .update({ status: "failed", error: (err as any).message })
       .eq("document_id", documentId);
+    return false;
   }
 }
