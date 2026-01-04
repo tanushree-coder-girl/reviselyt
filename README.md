@@ -168,7 +168,87 @@ cd reviselyt</code></pre>
 # or
 yarn install</code></pre>
 
-<h3>3. Environment Variables</h3>
+<h3>3. Supabase Setup</h3>
+<p> Reviselyt uses Supabase for authentication, database storage, and file uploads.
+<br />To run the project locally, you must configure your own Supabase project.
+</p>
+<ul>
+<li>Create a Supabase project: Go to: https://supabase.com
+</li>
+<li>Create a new project
+</li>
+<li>Database setup :
+Run the schema file provided in the repository
+in the Supabase SQL Editor (required step).
+<br />
+This will manually create all required tables,
+RLS policies, and triggers. <code>lib/supabase/schema.sql
+</code>
+</li>
+<li>This will create: <code>documents</code>
+<code>summaries</code>
+<code>summary_cache
+</code>
+<code>usage_limits</code>
+<code>Row Level Security (RLS) policies
+</code>
+<code>Auto-creation of usage limits for new users</code>
+</li>
+</ul>
+
+<h3>4. Storage bucket setup (Required for PDF uploads)</h3>
+
+<p>PDF uploads require a Supabase Storage bucket.
+</p>
+
+<ul>
+<li>Go to Supabase Dashboard → Storage
+</li>
+<li>Create a new bucket: Name: documents
+</li>
+</ul>
+
+
+#### Storage RLS policies (IMPORTANT)
+
+Run the following SQL to allow authenticated users to upload and access files:
+
+```bash
+# Allow authenticated users to upload files
+
+create policy "Allow authenticated uploads"
+on storage.objects
+for insert
+to authenticated
+with check (
+  bucket_id = 'documents'
+);
+```
+```bash
+# Allow authenticated users to read files
+
+create policy "Allow authenticated reads"
+on storage.objects
+for select
+to authenticated
+using (
+  bucket_id = 'documents'
+);
+```
+```bash
+# Allow authenticated users to delete files
+
+create policy "Allow authenticated deletes"
+on storage.objects
+for delete
+to authenticated
+using (
+  bucket_id = 'documents'
+);
+
+```
+
+<h3>5. Environment Variables</h3>
 
 Create a .env.local file using the example below.
 ```bash
@@ -184,26 +264,11 @@ HF_API_TOKEN=
 PIXABAY_API_KEY=
 ```
 
-<h3>4. Run locally</h3>
+<h3>6. Run locally</h3>
 
 <pre><code>npm run dev</code></pre>
 
 <p>Visit <code>http://localhost:3000</code></p>
-
-<hr/>
-
-<h3>Supabase Setup</h3>
-<p>
-Reviselyt uses Supabase for authentication and storing documents and summaries.
-To run the project locally, you need to set up your own Supabase project:
-</p>
-
-<ol>
-  <li>Create a new project on <a href="https://supabase.com" target="_blank">Supabase</a>.</li>
-  <li>Set up the tables by running <code>lib/supabase/schema.sql</code> provided in the repo.</li>
-  <li>Update your <code>.env.local</code> with your own Supabase URL and API keys.</li>
-  <li>The app will now store documents, summaries, and usage limits in your own database.</li>
-</ol>
 
 <hr/>
 

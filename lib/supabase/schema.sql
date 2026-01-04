@@ -108,6 +108,13 @@ create trigger on_auth_user_created
 after insert on auth.users
 for each row execute procedure public.handle_new_user();
 
+create unique index if not exists documents_hash_unique
+on documents(document_hash);
+
+create unique index if not exists summaries_document_unique
+on summaries(document_id);
+
+
 -- =========================================================
 -- End of schema
 -- =========================================================
