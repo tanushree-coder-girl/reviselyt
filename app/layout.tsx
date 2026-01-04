@@ -33,22 +33,13 @@ export const metadata: Metadata = {
       "Revise smarter for exams and interviews with AI-generated bullet summaries.",
     url: defaultUrl,
     siteName: "Reviselyt",
-    type: "website",
-    images: [
-    {
-      url: `${defaultUrl}/og-image.jpg`
-      width: 1200,
-      height: 630,
-      alt: "Reviselyt - AI Study & Interview Summarizer",
-    },
-  ],
+    type: "website"
   },
   twitter: {
     card: "summary_large_image",
     title: "Reviselyt",
     description:
       "AI-powered last-minute exam & interview revision tool.",
-    images: `${defaultUrl}/og-image.jpg`,
   },
 };
 
