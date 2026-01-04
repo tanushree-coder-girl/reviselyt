@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
     {
-      url: `public/og-image.jpg`,
+      url: `${defaultUrl}/og-image.jpg`
       width: 1200,
       height: 630,
       alt: "Reviselyt - AI Study & Interview Summarizer",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     title: "Reviselyt",
     description:
       "AI-powered last-minute exam & interview revision tool.",
-    images: [`public/og-image.jpg`],
+    images: `${defaultUrl}/og-image.png`,
   },
 };
 
