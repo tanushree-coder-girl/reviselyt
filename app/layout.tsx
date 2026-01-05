@@ -6,8 +6,8 @@ import "./globals.css";
 import { Suspense } from "react";
 import Loading from "./loading";
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
+const defaultUrl = process.env.NODE_ENV === "production"
+  ? `https://reviselyt.vercel.app`
   : "http://localhost:3000";
 
 export const metadata: Metadata = {
