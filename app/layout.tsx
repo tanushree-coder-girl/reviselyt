@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import ogImage from './opengraph-image.png';
 import { Toaster } from "sonner";
 import "./globals.css";
 import { Suspense } from "react";
@@ -35,13 +34,6 @@ export const metadata: Metadata = {
     url: defaultUrl,
     siteName: "Reviselyt",
     type: "website",
-    images: [
-      {
-        url: ogImage.src,
-        width: ogImage.width,
-        height: ogImage.height
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
