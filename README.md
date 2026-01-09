@@ -12,9 +12,9 @@
   ⭐ If you find this project useful, please consider starring the repository.
 </p>
 
-<div align="center">
+<!-- <div align="center">
 <a href="https://www.producthunt.com/products/reviselyt?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-reviselyt" target="_blank" rel="noopener noreferrer"><img alt="Reviselyt - Turn PDFs &amp; notes into quick revision bullet points | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1058755&amp;theme=light&amp;t=1767944986553"></a>
-</div>
+</div> -->
 <hr/>
 
 <h2>How It Works</h2>
