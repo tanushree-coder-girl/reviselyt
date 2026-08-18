@@ -12,6 +12,8 @@
   ⭐ If you find this project useful, please consider starring the repository.
 </p>
 
+<hr/>
+
 <strong>⚠️ Project Status: This project is currently not actively maintained and may not receive regular updates or bug fixes.</strong>
 
 <!-- <div align="center">
